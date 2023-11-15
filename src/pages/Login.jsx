@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { mobile } from "../../responsive";
 
 const Container = styled.div`
   width: 100vw;
@@ -19,6 +20,10 @@ const Wrapper = styled.div`
   padding: 20px;
   width: 30%;
   background: white;
+
+  ${mobile({
+    width: "75%",
+  })}
 `;
 
 const Title = styled.h1`
@@ -48,10 +53,10 @@ const Button = styled.button`
 `;
 
 const Link = styled.a`
-margin: 10px 0;
-font-size: 12px;
-text-decoration: underline;
-cursor: pointer;
+  margin: 10px 0;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
 `;
 
 const Login = () => {

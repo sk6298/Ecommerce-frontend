@@ -3,6 +3,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useState } from "react";
 import { sliderItems } from "../assets/mock-data/data";
+import { mobile } from "../../responsive";
 
 const Container = styled.div`
   width: 100%;
@@ -11,6 +12,10 @@ const Container = styled.div`
   background-color: azure;
   position: relative;
   overflow: hidden;
+
+  ${mobile({
+    display:"none"
+  })}
 `;
 const Arrow = styled.div`
   height: 50px;
