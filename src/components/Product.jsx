@@ -3,6 +3,7 @@ import { ShoppingCartOutlined } from "@mui/icons-material";
 import SearchIcon from "@mui/icons-material/Search";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 const Info = styled.div`
   opacity: 0;
   display: flex;
@@ -46,6 +47,8 @@ const Circle = styled.div`
 const Image = styled.img`
   height: 75%;
   z-index: 2;
+  width: 200px;
+  object-fit: cover;
 `;
 
 const Icon = styled.div`
@@ -76,7 +79,9 @@ const Product = ({ item }) => {
           <ShoppingCartOutlined />
         </Icon>
         <Icon>
+          <Link to={`/product/${item._id}`}>
           <SearchIcon />
+          </Link>
         </Icon>
         <Icon>
           <FavoriteBorderIcon />

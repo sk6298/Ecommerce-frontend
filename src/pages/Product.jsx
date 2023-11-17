@@ -6,6 +6,9 @@ import NewsLetter from "../components/NewsLetter";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { mobile } from "../../responsive";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { publicReqest, userRequest } from "../../requestMethods";
 const Container = styled.div``;
 const Wrapper = styled.div`
   display: flex;
@@ -13,8 +16,8 @@ const Wrapper = styled.div`
   padding: 50px;
 
   ${mobile({
-    flexDirection:"column",
-    padding:"10px"
+    flexDirection: "column",
+    padding: "10px",
   })}
 `;
 const ImgContainer = styled.div`
@@ -26,7 +29,7 @@ const Image = styled.img`
   object-fit: cover;
 
   ${mobile({
-    height:"40vh"
+    height: "40vh",
   })}
 `;
 const InfoContainer = styled.div`
@@ -34,7 +37,7 @@ const InfoContainer = styled.div`
   padding: 0 50px;
 
   ${mobile({
-    padding: "10px"
+    padding: "10px",
   })}
 `;
 const Title = styled.h1`
@@ -55,7 +58,7 @@ const FilterContainer = styled.div`
   justify-content: space-between;
 
   ${mobile({
-    width: "100%"
+    width: "100%",
   })}
 `;
 const Filter = styled.div`
@@ -87,7 +90,7 @@ const AddContainer = styled.div`
   width: 50%;
   justify-content: space-between;
   ${mobile({
-    width: "100%"
+    width: "100%",
   })}
 `;
 const AmountContainer = styled.div`
@@ -108,48 +111,61 @@ const Amount = styled.span`
   margin: 0 5px;
 `;
 const Button = styled.button`
-padding: 15px;
-border: 2px solid teal;
-background-color: white;
-cursor: pointer;
-font-weight: 500;
+  padding: 15px;
+  border: 2px solid teal;
+  background-color: white;
+  cursor: pointer;
+  font-weight: 500;
 
-&:hover {
+  &:hover {
     background-color: #f8f8f8;
-}
+  }
 `;
 
 const Product = () => {
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const url = `/products/find/${id}`;
+        const res = await userRequest.get(url);
+        setProduct(res.data);
+        console.log("Product data", res.data);
+      } catch (error) {
+        console.log("Fail to fetch product with given id", error);
+      }
+    };
+    getProduct();
+  }, [id]);
   return (
     <Container>
       <Navbar></Navbar>
       <Annoucement></Annoucement>
+      {product ? 
       <Wrapper>
         <ImgContainer>
-          <Image src="https://d3o2e4jr3mxnm3.cloudfront.net/Mens-Jake-Guitar-Vintage-Crusher-Tee_68382_1_lg.png"></Image>
+          <Image src={product.img}></Image>
         </ImgContainer>
         <InfoContainer>
-          <Title>Cool T shirt</Title>
-          <Desc>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nobis
-            adipisci voluptas eius minima nemo molestias dicta aliquam dolorum
-            veritatis maiores.
-          </Desc>
-          <Price>$ 20</Price>
+          <Title>{product.title}</Title>
+          <Desc>{product.desc}</Desc>
+          <Price>$ {product.price}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Color</FilterTitle>
-              <FilterColor color="black" />
-              <FilterColor color="white" />
-              <FilterColor color="darkblue" />
+              {product.colors.map((color) => (
+                <FilterColor color={color} key={color} />
+              ))}
             </Filter>
 
             <Filter>
               <FilterTitle>Size</FilterTitle>
               <FilterSize>
-                <FilterSizeOption>S</FilterSizeOption>
-                <FilterSizeOption>M</FilterSizeOption>
-                <FilterSizeOption>L</FilterSizeOption>
+                {product.size.map((s) => (
+                  <FilterSizeOption key={s}>{s}</FilterSizeOption>
+                ))}
               </FilterSize>
             </Filter>
           </FilterContainer>
@@ -163,7 +179,9 @@ const Product = () => {
             <Button>ADD TO CART</Button>
           </AddContainer>
         </InfoContainer>
-      </Wrapper>
+      </Wrapper>:
+      <>Oops ! No product found !</>
+      }
       <NewsLetter></NewsLetter>
       <Footer></Footer>
     </Container>
