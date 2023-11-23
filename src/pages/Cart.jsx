@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/jsx-key */
 import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Annoucement from "../components/Annoucement";
@@ -5,6 +8,13 @@ import Footer from "../components/Footer";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { mobile } from "../../responsive";
+import { useDispatch, useSelector } from "react-redux";
+import StripeCheckout from 'react-stripe-checkout'
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { userRequest } from "../../requestMethods";
+
+const KEY = process.env.REACT_APP_STRIPE;
 
 const Container = styled.div``;
 
@@ -168,6 +178,38 @@ const SummaryButton = styled.button`
 `;
 
 const Cart = () => {
+
+  const cart = useSelector((state) => state.cart);
+  const {products,quantity,total} = cart;
+  const dispatch = useDispatch();
+  const [stripeToken, setStripeToken] = useState(null)
+  const navigate = useNavigate()
+
+  const onToken = (token) => {
+    setStripeToken(token);
+  };
+
+  useEffect(() => {
+
+    const makePaymentRequest = async () => {
+      try {
+        const res = await userRequest.post('/checkout/payment',{
+          tokenId: stripeToken.id,
+          amount: 10
+        })
+        navigate("/success", {
+          state: {
+            stripeData: res.data,
+            cart: cart,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    makePaymentRequest();
+  },[cart.total,navigate,stripeToken])
+
   return (
     <Container>
       <Navbar />
@@ -177,70 +219,48 @@ const Cart = () => {
         <Top>
           <TopButton>CONTINUE SHOPPING</TopButton>
           <TopTexts>
-            <TopText>Shopping Cart (2)</TopText>
+            <TopText>Shopping Cart ({cart.quantity})</TopText>
             <TopText>Your Wishlist(0)</TopText>
           </TopTexts>
           <TopButton type="filled">CHECKOUT NOW</TopButton>
         </Top>
         <Bottom>
           <Info>
-            <Product>
+            {
+              products.map(product => (
+            <Product key={product._id}>
               <ProductDetail>
-                <Image src="src/assets/shoe-red.jpg" />
+                <Image src={product.img} />
                 <Details>
                   <ProductName>
-                    <b>Product: </b>Rebook Shoes
+                    <b>Product: </b>{product.title}
                   </ProductName>
                   <ProductId>
-                    <b>Product ID: </b>AKSF329JK3
+                    <b>Product ID: </b>{product._id}
                   </ProductId>
-                  <ProductColor color="red" />
+                  <ProductColor color={product.color} />
                   <ProductSize>
-                    <b>Size: </b> M{" "}
+                    <b>Size: </b> {product.size}
                   </ProductSize>
                 </Details>
               </ProductDetail>
               <PriceDetail>
                 <ProductAmountContainer>
                   <AddIcon />
-                  <ProductAmount>2</ProductAmount>
+                  <ProductAmount>{product.quantity}</ProductAmount>
                   <RemoveIcon />
                 </ProductAmountContainer>
-                <ProductPrice>$ 20</ProductPrice>
+                <ProductPrice>$ {product.price * product.quantity}</ProductPrice>
               </PriceDetail>
             </Product>
-            <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="src/assets/shoe-blue.jpg" />
-                <Details>
-                  <ProductName>
-                    <b>Product: </b>Rebook Shoes
-                  </ProductName>
-                  <ProductId>
-                    <b>Product ID: </b>AKSF329JK3
-                  </ProductId>
-                  <ProductColor color="blue" />
-                  <ProductSize>
-                    <b>Size: </b> M{" "}
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon />
-                  <ProductAmount>2</ProductAmount>
-                  <RemoveIcon />
-                </ProductAmountContainer>
-                <ProductPrice>$ 20</ProductPrice>
-              </PriceDetail>
-            </Product>
+              ))
+            }
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Sub Total</SummaryItemText>
-              <SummaryItemPrice>$ 40</SummaryItemPrice>
+              <SummaryItemPrice>$ {total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
@@ -252,9 +272,20 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ 40</SummaryItemPrice>
+              <SummaryItemPrice>$ {total}</SummaryItemPrice>
             </SummaryItem>
+            <StripeCheckout 
+              name="Dukan"
+              image="https://img.freepik.com/free-vector/shop-with-sign-we-are-open_23-2148547718.jpg?w=1060&t=st=1700581612~exp=1700582212~hmac=942e17855e201524ed3e45606ef42ef3727bd35eb88b73777262b94f9a8b89c8https://img.freepik.com/free-vector/shop-with-sign-we-are-open_23-2148547718.jpg?w=1060&t=st=1700581612~exp=1700582212~hmac=942e17855e201524ed3e45606ef42ef3727bd35eb88b73777262b94f9a8b89c8"
+              billingAddress
+              shippingAddress
+              description={`Your total is $ ${total}`}
+              amount={total * 80}
+              token={onToken}
+              stripeKey={KEY}
+            >
             <SummaryButton>CHECKOUT NOW</SummaryButton>
+            </StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>

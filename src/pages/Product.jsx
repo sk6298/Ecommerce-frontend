@@ -8,7 +8,11 @@ import AddIcon from "@mui/icons-material/Add";
 import { mobile } from "../../responsive";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { publicReqest, userRequest } from "../../requestMethods";
+import { userRequest } from "../../requestMethods";
+import { useDispatch } from "react-redux";
+import {addProduct} from '../redux/cartSlice'
+
+
 const Container = styled.div``;
 const Wrapper = styled.div`
   display: flex;
@@ -125,6 +129,10 @@ const Button = styled.button`
 const Product = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const [color, setColor] = useState("");
+  const [size, setSize] = useState("");
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getProduct = async () => {
@@ -139,49 +147,79 @@ const Product = () => {
     };
     getProduct();
   }, [id]);
+
+  const handleQuantity = (type) => {
+    if (type == "inc") {
+      // increment
+      setQuantity(quantity + 1);
+    } else {
+      // decrease
+      quantity > 1 && setQuantity(quantity - 1);
+    }
+  };
+
+  const handleCart = () => {
+    // Update cart
+    console.log("Color", color, "Size", size, "Quantity", quantity);
+    dispatch(addProduct({...product,color,size,quantity}))
+
+  };
   return (
     <Container>
       <Navbar></Navbar>
       <Annoucement></Annoucement>
-      {product ? 
-      <Wrapper>
-        <ImgContainer>
-          <Image src={product.img}></Image>
-        </ImgContainer>
-        <InfoContainer>
-          <Title>{product.title}</Title>
-          <Desc>{product.desc}</Desc>
-          <Price>$ {product.price}</Price>
-          <FilterContainer>
-            <Filter>
-              <FilterTitle>Color</FilterTitle>
-              {product.colors.map((color) => (
-                <FilterColor color={color} key={color} />
-              ))}
-            </Filter>
-
-            <Filter>
-              <FilterTitle>Size</FilterTitle>
-              <FilterSize>
-                {product.size.map((s) => (
-                  <FilterSizeOption key={s}>{s}</FilterSizeOption>
+      {product ? (
+        <Wrapper>
+          <ImgContainer>
+            <Image src={product.img}></Image>
+          </ImgContainer>
+          <InfoContainer>
+            <Title>{product.title}</Title>
+            <Desc>{product.desc}</Desc>
+            <Price>$ {product.price}</Price>
+            <FilterContainer>
+              <Filter>
+                <FilterTitle>Color</FilterTitle>
+                {product.colors.map((color) => (
+                  <FilterColor
+                    color={color}
+                    key={color}
+                    onClick={() => setColor(color)}
+                  />
                 ))}
-              </FilterSize>
-            </Filter>
-          </FilterContainer>
+              </Filter>
 
-          <AddContainer>
-            <AmountContainer>
-              <RemoveIcon />
-              <Amount>2</Amount>
-              <AddIcon />
-            </AmountContainer>
-            <Button>ADD TO CART</Button>
-          </AddContainer>
-        </InfoContainer>
-      </Wrapper>:
-      <>Oops ! No product found !</>
-      }
+              <Filter>
+                <FilterTitle>Size</FilterTitle>
+                <FilterSize onChange={(e) => setSize(e.target.value)}>
+                  {product.size.map((s) => (
+                    <FilterSizeOption key={s} value={s}>
+                      {s}
+                    </FilterSizeOption>
+                  ))}
+                </FilterSize>
+              </Filter>
+            </FilterContainer>
+
+            <AddContainer>
+              <AmountContainer>
+                <RemoveIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleQuantity("dec")}
+                />
+                <Amount>{quantity}</Amount>
+                <AddIcon
+                  style={{ cursor: "pointer" }}
+                  onClick={() => handleQuantity("inc")}
+                />
+              </AmountContainer>
+              <Button onClick={handleCart}>ADD TO CART</Button>
+            </AddContainer>
+          </InfoContainer>
+        </Wrapper>
+      ) : (
+        <>Oops ! No product found !</>
+      )}
       <NewsLetter></NewsLetter>
       <Footer></Footer>
     </Container>

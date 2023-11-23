@@ -3,6 +3,9 @@ import { Search, ShoppingCartOutlined } from "@mui/icons-material";
 import { Badge } from "@mui/material";
 import styled from "styled-components";
 import { mobile } from "../../responsive";
+import { useDispatch, useSelector, useStore } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { logoutUser } from "../redux/userSlice";
 
 const Container = styled.div`
   height: 60px;
@@ -18,7 +21,7 @@ const Wrapper = styled.div`
   align-items: center;
 
   ${mobile({
-    padding: "10px 0"
+    padding: "10px 0",
   })}
 `;
 
@@ -32,7 +35,7 @@ const Language = styled.span`
   font-size: 14px;
   cursor: pointer;
   ${mobile({
-    display:"none"
+    display: "none",
   })}
 `;
 
@@ -49,7 +52,7 @@ const Input = styled.input`
   outline: none;
 
   ${mobile({
-    width: "50px"
+    width: "50px",
   })}
 `;
 const Center = styled.div`
@@ -61,7 +64,7 @@ const Logo = styled.h1`
   text-align: center;
 
   ${mobile({
-    fontSize: "24px"
+    fontSize: "24px",
   })}
 `;
 const Right = styled.div`
@@ -72,7 +75,7 @@ const Right = styled.div`
 
   ${mobile({
     justifyContent: "center",
-    flex:2
+    flex: 2,
   })}
 `;
 
@@ -82,18 +85,28 @@ const MenuItem = styled.div`
   margin-left: 25px;
   ${mobile({
     fontSize: "10px",
-    marginLeft:"10px"
+    marginLeft: "10px",
   })}
 `;
 
 const Navbar = () => {
+  const quantity = useSelector((state) => state.cart.quantity);
+  const user = useSelector((state) => state.user.currentUser);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate("/login");
+  };
+
   return (
     <Container>
       <Wrapper>
         <Left>
           <Language>EN</Language>
           <SearchContainer>
-            <Input type="text" placeholder="Search"/>
+            <Input type="text" placeholder="Search" />
             <Search
               style={{
                 color: "gray",
@@ -106,13 +119,27 @@ const Navbar = () => {
           <Logo>DUKAN.</Logo>
         </Center>
         <Right>
-          <MenuItem>REGISTER</MenuItem>
-          <MenuItem>LOGIN</MenuItem>
-          <MenuItem>
-            <Badge badgeContent={4} color="primary">
-              <ShoppingCartOutlined />
-            </Badge>
-          </MenuItem>
+          {user ? (
+            <>
+              <MenuItem onClick={handleLogout}>LOG OUT</MenuItem>
+              <Link to={"/cart"}>
+                <MenuItem>
+                  <Badge badgeContent={quantity} color="primary">
+                    <ShoppingCartOutlined />
+                  </Badge>
+                </MenuItem>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/register">
+                <MenuItem>REGISTER</MenuItem>
+              </Link>
+              <Link to="/login">
+                <MenuItem>LOGIN</MenuItem>
+              </Link>
+            </>
+          )}
         </Right>
       </Wrapper>
     </Container>
