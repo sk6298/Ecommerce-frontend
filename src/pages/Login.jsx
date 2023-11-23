@@ -62,7 +62,7 @@ const Button = styled.button`
   }
 `;
 
-const LinkItem = styled.a`
+const LinkItem = styled.div`
   margin: 10px 0;
   font-size: 12px;
   text-decoration: underline;

@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { userRequest } from "../../requestMethods";
 
-const KEY = process.env.REACT_APP_STRIPE;
+const KEY = import.meta.env.VITE_APP_STRIPE;
 
 const Container = styled.div``;
 

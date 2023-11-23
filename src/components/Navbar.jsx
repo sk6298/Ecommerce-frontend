@@ -122,22 +122,22 @@ const Navbar = () => {
           {user ? (
             <>
               <MenuItem onClick={handleLogout}>LOG OUT</MenuItem>
-              <Link to={"/cart"}>
-                <MenuItem>
+              <MenuItem>
+                <Link to={"/cart"}>
                   <Badge badgeContent={quantity} color="primary">
                     <ShoppingCartOutlined />
                   </Badge>
-                </MenuItem>
-              </Link>
+                </Link>
+              </MenuItem>
             </>
           ) : (
             <>
-              <Link to="/register">
-                <MenuItem>REGISTER</MenuItem>
-              </Link>
-              <Link to="/login">
-                <MenuItem>LOGIN</MenuItem>
-              </Link>
+              <MenuItem>
+                <Link to="/register">REGISTER</Link>
+              </MenuItem>
+              <MenuItem>
+                <Link to="/login">LOGIN</Link>
+              </MenuItem>
             </>
           )}
         </Right>

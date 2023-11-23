@@ -8,30 +8,79 @@ import ProductList from "./pages/ProductList";
 import Register from "./pages/Register";
 import Success from "./pages/Success";
 import { useSelector } from "react-redux";
-
+import RequireAuth from "./components/RequireAuth";
 
 function App() {
-  const user = useSelector(state => state.user.currentUser);
+  const user = useSelector((state) => state.user.currentUser);
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/products" element={<ProductList />}>
-        <Route path=":category" element={<ProductList />}></Route>
+      <Route
+        path="/"
+        element={
+          <RequireAuth>
+            <Home />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/products"
+        element={
+          <RequireAuth>
+            <ProductList />
+          </RequireAuth>
+        }
+      >
+        <Route
+          path=":category"
+          element={
+            <RequireAuth>
+              <ProductList />
+            </RequireAuth>
+          }
+        ></Route>
       </Route>
-      <Route path="/product" element={<Product />}>
-        <Route path=":id" element={<Product />}></Route>
+      <Route
+        path="/product"
+        element={
+          <RequireAuth>
+            <Product />
+          </RequireAuth>
+        }
+      >
+        <Route
+          path=":id"
+          element={
+            <RequireAuth>
+              <Product />
+            </RequireAuth>
+          }
+        ></Route>
       </Route>
-      <Route path="/login" element={user ? <Navigate to="/" /> : <Login />}></Route>
-      <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/success" element={<Success />} />
+      <Route
+        path="/login"
+        element={user ? <Navigate to="/" /> : <Login />}
+      ></Route>
+      <Route
+        path="/register"
+        element={user ? <Navigate to="/" /> : <Register />}
+      />
+      <Route
+        path="/cart"
+        element={
+          <RequireAuth>
+            <Cart />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/success"
+        element={
+          <RequireAuth>
+            <Success />
+          </RequireAuth>
+        }
+      />
       <Route path="*" Component={Home} />
-      {/* <Home /> */}
-      {/* <ProductList/> */}
-      {/* <Product /> */}
-      {/* <Register/> */}
-      {/* <Login/> */}
-      {/* <Cart /> */}
     </Routes>
   );
 }

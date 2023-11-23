@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import axios from "axios";
 
-const BASE_URL = "http://localhost:7002/api";
-const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NTc1ODk0YzBiNTNiZGE5YjU2ZTIzNSIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcwMDU3ODEzOCwiZXhwIjoxNzAwODM3MzM4fQ.LwAkaRDNm-Zge5aeyxapXwDzWZ5VlS1ZU6Ckx5ycGqg";
+const BASE_URL = import.meta.env.VITE_APP_SERVER_URL;
+const TOKEN = localStorage.getItem("persist:root") && JSON.parse(JSON.parse(localStorage.getItem("persist:root")).user).currentUser && JSON.parse(JSON.parse(localStorage.getItem("persist:root")).user).currentUser.accessToken;
 
 export const publicReqest = axios.create({
     baseURL:BASE_URL
