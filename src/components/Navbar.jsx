@@ -9,6 +9,8 @@ import { logoutUser } from "../redux/userSlice";
 
 const Container = styled.div`
   height: 60px;
+  box-shadow: 0 0 6px gray;
+  background: white;
   ${mobile({
     height: "50px",
   })}
@@ -89,7 +91,7 @@ const MenuItem = styled.div`
   })}
 `;
 
-const Navbar = () => {
+const Navbar = ({ showBrandName }) => {
   const quantity = useSelector((state) => state.cart.quantity);
   const user = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
@@ -103,7 +105,7 @@ const Navbar = () => {
   return (
     <Container>
       <Wrapper>
-        <Left>
+        {/* <Left>
           <Language>EN</Language>
           <SearchContainer>
             <Input type="text" placeholder="Search" />
@@ -114,21 +116,23 @@ const Navbar = () => {
               }}
             />
           </SearchContainer>
-        </Left>
-        <Center>
+        </Left> */}
+        <Left>
           <Logo>DUKAN.</Logo>
-        </Center>
+        </Left>
         <Right>
           {user ? (
             <>
               <MenuItem onClick={handleLogout}>LOG OUT</MenuItem>
-              <MenuItem>
-                <Link to={"/cart"}>
-                  <Badge badgeContent={quantity} color="primary">
-                    <ShoppingCartOutlined />
-                  </Badge>
-                </Link>
-              </MenuItem>
+              {!user.isAdmin && (
+                <MenuItem>
+                  <Link to={"/cart"}>
+                    <Badge badgeContent={quantity} color="primary">
+                      <ShoppingCartOutlined />
+                    </Badge>
+                  </Link>
+                </MenuItem>
+              )}
             </>
           ) : (
             <>
